@@ -250,7 +250,7 @@ export default {
         
         const aiLogs = [
             "正在对比预选库... 发现cf.tencentapp.cn边缘节点权重占优。",
-            "分析中... cf.090227.xyz节点在华东地区表现最佳。",
+            "分析中... www.visa.cn节点在华东地区表现最佳。",
             "计算路由权重... mfa.gov.ua 对联通友好度 +15%。",
             "预测模型显示：切换后丢包率将下降 85%。",
             "BGP 路径分析：建议绕行香港 IX 出口。"
@@ -258,7 +258,7 @@ export default {
         
         const actionLogs = [
             "已执行解析变更：广东/移动 → cf.tencentapp.cn.",
-            "已执行解析变更：江苏/电信 → visa.cn.",
+            "已执行解析变更：江苏/电信 → www.visa.cn.",
             "已执行解析变更：黑龙江/联通 → mfa.gov.ua.",
             "已执行解析变更：浙江/移动 → shopify.com.",
             "已执行解析变更：北京/联通 → ip.sb."
