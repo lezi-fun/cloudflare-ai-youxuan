@@ -264,14 +264,76 @@ export default {
             "已执行解析变更：北京/联通 → ip.sb."
         ];
 
-        let idx = 0;
+        const CURSOR = "▋";
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 当前“正在输出”的元素（仅它显示光标）
+        let activeEl = null;
+        let activeBaseText = "";
+        let cursorVisible = true;
+
+        function setActive(el, baseText) {
+            activeEl = el;
+            activeBaseText = baseText;
+            activeEl.innerText = activeBaseText + CURSOR; // 光标在“下一个字位置”
+        }
+
+        function clearActiveKeepText() {
+            if (activeEl) {
+                activeEl.innerText = activeBaseText; // 完成后去掉光标
+            }
+            activeEl = null;
+            activeBaseText = "";
+        }
+
+        // 全局闪烁：仅闪烁当前输出行光标
         setInterval(() => {
-            document.getElementById('log-info').innerText = infoLogs[idx % infoLogs.length];
-            document.getElementById('log-warn').innerText = warnLogs[idx % warnLogs.length];
-            document.getElementById('log-ai').innerText = aiLogs[idx % aiLogs.length];
-            document.getElementById('log-action').innerText = actionLogs[idx % actionLogs.length];
-            idx++;
-        }, 3500);
+            if (!activeEl) return;
+            cursorVisible = !cursorVisible;
+            activeEl.innerText = activeBaseText + (cursorVisible ? CURSOR : " ");
+        }, 420);
+
+        // 逐字输出：光标跟着走，并且始终在下一个字位置
+        async function typeLine(el, text, speed = 24, pauseAfter = 380) {
+            setActive(el, "");
+            await sleep(120); // 起手小停顿
+
+            for (let i = 0; i < text.length; i++) {
+                activeBaseText = text.slice(0, i + 1);
+                activeEl.innerText = activeBaseText + CURSOR;
+                await sleep(speed);
+            }
+
+            await sleep(pauseAfter); // 本行完成后稍停
+            clearActiveKeepText();
+        }
+
+        let idx = 0;
+
+        async function playLogs() {
+            const infoEl = document.getElementById('log-info');
+            const warnEl = document.getElementById('log-warn');
+            const aiEl = document.getElementById('log-ai');
+            const actionEl = document.getElementById('log-action');
+
+            while (true) {
+                const i = idx % infoLogs.length;
+
+                // 按终端风格：逐行输出（串行），只有当前行有光标
+                await typeLine(infoEl, infoLogs[i], 20, 260);
+                await typeLine(warnEl, warnLogs[i], 22, 260);
+                await typeLine(aiEl, aiLogs[i], 24, 260);
+                await typeLine(actionEl, actionLogs[i], 20, 420);
+
+                idx++;
+                await sleep(650); // 一轮结束后再停顿一下
+            }
+        }
+
+        playLogs();
     </script>
 </body>
 </html>`;
