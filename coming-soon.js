@@ -257,11 +257,11 @@ export default {
         ];
         
         const actionLogs = [
-            "已执行解析变更：广东/移动 -&gt; cf.tencentapp.cn.",
-            "已执行解析变更：江苏/电信 -&gt; visa.cn.",
-            "已执行解析变更：黑龙江/联通 -&gt; mfa.gov.ua.",
-            "已执行解析变更：浙江/移动 -&gt; shopify.com.",
-            "已执行解析变更：北京/联通 -&gt; ip.sb."
+            "已执行解析变更：广东/移动 → cf.tencentapp.cn.",
+            "已执行解析变更：江苏/电信 → visa.cn.",
+            "已执行解析变更：黑龙江/联通 → mfa.gov.ua.",
+            "已执行解析变更：浙江/移动 → shopify.com.",
+            "已执行解析变更：北京/联通 → ip.sb."
         ];
 
         let idx = 0;
