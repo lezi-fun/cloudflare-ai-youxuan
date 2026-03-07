@@ -214,7 +214,7 @@ export default {
         <footer class="panel px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
             <div>&copy; 2026 SmartRoute. Surgical Precision.</div>
             <div class="flex gap-6">
-                <a href="#" class="hover:text-white transition-colors">ITDog</a>
+                <a href="#" class="hover:text-white transition-colors">CloudFlare</a>
                 <a href="#" class="hover:text-white transition-colors">GitHub</a>
                 <a href="#" class="hover:text-white text-orange-400 font-bold">Live Beta</a>
             </div>
@@ -235,8 +235,8 @@ export default {
         const infoLogs = [
             "正在初始化中国三网分省调度引擎...",
             "正在扫描全球 Cloudflare Anycast 节点漂移...",
-            "正在同步华为云 DNS 解析库...",
-            "正在预热腾讯云边缘节点连接池...",
+            "正在同步 DNS 解析库...",
+            "正在预热边缘节点连接池...",
             "正在分析最近 5 分钟的丢包数据..."
         ];
         
@@ -249,8 +249,8 @@ export default {
         ];
         
         const aiLogs = [
-            "正在对比预选库... 发现腾讯云边缘节点权重占优。",
-            "分析中... Visa 节点在华东地区表现最佳。",
+            "正在对比预选库... 发现cf.tencentapp.cn边缘节点权重占优。",
+            "分析中... cf.090227.xyz节点在华东地区表现最佳。",
             "计算路由权重... mfa.gov.ua 对联通友好度 +15%。",
             "预测模型显示：切换后丢包率将下降 85%。",
             "BGP 路径分析：建议绕行香港 IX 出口。"
@@ -270,7 +270,6 @@ export default {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // 当前“正在输出”的元素（仅它显示光标）
         let activeEl = null;
         let activeBaseText = "";
         let cursorVisible = true;
@@ -278,28 +277,33 @@ export default {
         function setActive(el, baseText) {
             activeEl = el;
             activeBaseText = baseText;
-            activeEl.innerText = activeBaseText + CURSOR; // 光标在“下一个字位置”
+            activeEl.innerText = activeBaseText + CURSOR;
         }
 
         function clearActiveKeepText() {
             if (activeEl) {
-                activeEl.innerText = activeBaseText; // 完成后去掉光标
+                activeEl.innerText = activeBaseText;
             }
             activeEl = null;
             activeBaseText = "";
         }
 
-        // 全局闪烁：仅闪烁当前输出行光标
+        function clearAllLogs() {
+            document.getElementById('log-info').innerText = "";
+            document.getElementById('log-warn').innerText = "";
+            document.getElementById('log-ai').innerText = "";
+            document.getElementById('log-action').innerText = "";
+        }
+
         setInterval(() => {
             if (!activeEl) return;
             cursorVisible = !cursorVisible;
             activeEl.innerText = activeBaseText + (cursorVisible ? CURSOR : " ");
         }, 420);
 
-        // 逐字输出：光标跟着走，并且始终在下一个字位置
         async function typeLine(el, text, speed = 24, pauseAfter = 380) {
             setActive(el, "");
-            await sleep(120); // 起手小停顿
+            await sleep(120);
 
             for (let i = 0; i < text.length; i++) {
                 activeBaseText = text.slice(0, i + 1);
@@ -307,7 +311,7 @@ export default {
                 await sleep(speed);
             }
 
-            await sleep(pauseAfter); // 本行完成后稍停
+            await sleep(pauseAfter);
             clearActiveKeepText();
         }
 
@@ -322,14 +326,18 @@ export default {
             while (true) {
                 const i = idx % infoLogs.length;
 
-                // 按终端风格：逐行输出（串行），只有当前行有光标
+                // 每一轮开始：先清空全部终端内容
+                clearAllLogs();
+                await sleep(250);
+
+                // 逐行输出，只有当前行有光标
                 await typeLine(infoEl, infoLogs[i], 20, 260);
                 await typeLine(warnEl, warnLogs[i], 22, 260);
                 await typeLine(aiEl, aiLogs[i], 24, 260);
                 await typeLine(actionEl, actionLogs[i], 20, 420);
 
                 idx++;
-                await sleep(650); // 一轮结束后再停顿一下
+                await sleep(650);
             }
         }
 
